@@ -7,19 +7,35 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <DockPanel  >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="385" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,250">
             <Menu DockPanel.Dock="Top" IsMainMenu="True" >
-                <MenuItem Background="LightGray" Header="_Obrazek" >
-                    <MenuItem Background="LightGray" Header="_Wczytaj z pliku" Click="ZaladujZPliku" >
-                        <!--<MenuItem.Icon>
-                            <Image Source="Image/share.png" />
-                        </MenuItem.Icon>-->
-                    </MenuItem>
-                    <Separator />
+                <MenuItem Background="LightGray" Header="_Obraz" >
+                    <MenuItem Background="LightGray" Header="_Wczytaj z pliku" Click="ZaladujZPliku"/>
+                    <Separator/>
                 </MenuItem>
+                <MenuItem Background="LightGray" Header="_Binaryzacja" Click="BinaryzacjaAutomatyczna" />
+                <MenuItem Background="LightGray" Header="_Szkieletyzacja" />
             </Menu>
         </DockPanel>
-        <Image Name="obrazek" HorizontalAlignment="Left" Height="200" Margin="120,72,0,0" VerticalAlignment="Top" Width="200"/>
-        <Image Name="obrazek_2" HorizontalAlignment="Right" Height="200" Margin="0,72,120,0" VerticalAlignment="Top" Width="200"/>
+
+        <Image Grid.Column="0" Grid.Row="0" Source="D:\SEMESTR 6\podstawy biometrii\Obrazy do zadania Fingerprint\01.png" Name="obrazek" HorizontalAlignment="Left" Height="200" Margin="120,72,0,0" VerticalAlignment="Top" Width="200"/>
+        <Image Grid.Column="1" Grid.Row="0" Source="D:\SEMESTR 6\podstawy biometrii\Obrazy do zadania Fingerprint\01t.png" Name="obrazek_2" HorizontalAlignment="Right" Height="200" Margin="0,72,120,0" VerticalAlignment="Top" Width="200"/>
+
+        <Button Grid.Row="2" Margin="300,25,300,-60" Grid.RowSpan="3" Grid.ColumnSpan="2">rozgałęzienia</Button>
+        <Button Grid.Row="2" Margin="300,65,300,-100" Grid.RowSpan="3" Grid.ColumnSpan="2">przefiltrowanie rozgałęzień</Button>
+   
     </Grid>
+
 </Window>
