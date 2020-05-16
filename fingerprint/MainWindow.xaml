@@ -26,7 +26,7 @@
                     <Separator/>
                 </MenuItem>
                 <MenuItem Background="LightGray" Header="_Binaryzacja" Click="BinaryzacjaAutomatyczna" />
-                <MenuItem Background="LightGray" Header="_Szkieletyzacja" />
+                <MenuItem Background="LightGray" Header="_Szkieletyzacja" Click="Szkieletyzacja"/>
             </Menu>
         </DockPanel>
 
