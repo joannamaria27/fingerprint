@@ -21,8 +21,10 @@ namespace fingerprint
         }
         private void ZaladujZPliku(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image files (*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg;)|*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg; | All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg;)|*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg; | All files (*.*)|*.*"
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 try
@@ -41,15 +43,13 @@ namespace fingerprint
         #region ZamianaBitmap
         private Bitmap BitmapImage2DBitmap(BitmapImage bitmapImage)
         {
-            using (MemoryStream outStream = new MemoryStream())
-            {
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(bitmapImage));
-                enc.Save(outStream);
-                Bitmap bitmap = new Bitmap(outStream);
+            using MemoryStream outStream = new MemoryStream();
+            BitmapEncoder enc = new BmpBitmapEncoder();
+            enc.Frames.Add(BitmapFrame.Create(bitmapImage));
+            enc.Save(outStream);
+            Bitmap bitmap = new Bitmap(outStream);
 
-                return new Bitmap(bitmap);
-            }
+            return new Bitmap(bitmap);
         }
         public BitmapImage ConvertBitmapImage(Bitmap bitmap)
         {
@@ -67,14 +67,12 @@ namespace fingerprint
 
         private void BinaryzacjaAutomatyczna(Bitmap b)
         {
-            //BitmapImage source = obrazek_2.Source as BitmapImage;
-            //Bitmap b = BitmapImage2DBitmap(source);
             Szarosc(b);
 
             if (b != null)
             {
                 Color curColor;
-                int kolor = 0;
+                int kolor;
                 int prog;
                 prog = ProgOtsu(b);
 
@@ -106,7 +104,7 @@ namespace fingerprint
             {
                 for (int n = 0; n < b.Height; n++)
                 {
-                    System.Drawing.Color pixel = b.GetPixel(m, n);
+                    Color pixel = b.GetPixel(m, n);
                     histogram[pixel.R]++;
                 }
             }
@@ -128,9 +126,9 @@ namespace fingerprint
             for (int t = 0; t < 256; t++)
             {
                 for (int k = 0; k <= t; k++)
-                    srOb[t] += (k * histogram[k]);// / pob[t];
+                    srOb[t] += (k * histogram[k]);
                 for (int k = t + 1; k < 256; k++)
-                    srT[t] += (k * histogram[k]);/// pt[t];
+                    srT[t] += (k * histogram[k]);
             }
 
             for (int t = 0; t < 256; t++)
@@ -145,12 +143,8 @@ namespace fingerprint
             double maks = 0;
 
             for (int t = 0; t < 256; t++)
-            {
                 wariancjaMiedzy[t] = pob[t] * pt[t] * (srOb[t] - srT[t]) * (srOb[t] - srT[t]);
-                //(pob[t] * Math.Pow(warOb[t], 2)) + (pt[t] * Math.Pow(warT[t], 2));
-            }
 
-            maks = 0;
             int x = 0;
             for (int w = 0; w < 256; w++)
             {
@@ -162,10 +156,8 @@ namespace fingerprint
             }
             return x;
         }
-        private void Szarosc(Bitmap gmp)
+        private void Szarosc(Bitmap bmp)
         {
-            BitmapImage source = obrazek_2.Source as BitmapImage;
-            Bitmap bmp = BitmapImage2DBitmap(source);
             Color p;
             for (int y = 0; y < bmp.Height; y++)
             {
@@ -179,13 +171,11 @@ namespace fingerprint
                     int b = p.B;
                     int avg = (r + g + b) / 3;
 
-                    bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(a, avg, avg, avg));
+                    bmp.SetPixel(x, y, Color.FromArgb(a, avg, avg, avg));
                 }
             }
             obrazek_2.Source = ConvertBitmapImage(bmp);
-            //obrazek.Source = ConvertBitmapImage(bmp);
         }
-
 
         private void Szkieletyzacja(object sender, RoutedEventArgs e)
         {
@@ -194,12 +184,12 @@ namespace fingerprint
             BinaryzacjaAutomatyczna(b);
             SzkieletyzacjaKMM(b);
         }
-        private void SzkieletyzacjaKMM(Bitmap b) //po binaryzacji
+        private void SzkieletyzacjaKMM(Bitmap b)
         {
             int[] listaCzworek = { 3, 6, 7, 12, 14, 15, 24, 28, 30, 48, 56, 60, 96, 112, 120, 129, 131, 135, 192, 193, 195, 224, 225, 240 };
             int[,] maksaSprawdzajaca = { { 128, 64, 32 }, { 1, 0, 16 }, { 2, 4, 8 } };
             int[] maskaWyciec = { 3, 5, 7, 12, 13, 14, 15, 20, 21, 22, 23, 28, 29, 30, 31, 48, 52, 53, 54, 55, 56, 60, 61, 62, 63, 65, 67, 69, 71, 77, 79, 80, 81, 83, 84, 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 97, 99, 101, 103, 109, 111, 112, 113, 115, 116, 117, 118, 119, 120, 121, 123, 124, 125, 126, 127, 131, 133, 135, 141, 143, 149, 151, 157, 159, 181, 183, 189, 191, 192, 193, 195, 197, 199, 205, 207, 208, 209, 211, 212, 213, 214, 215, 216, 217, 219, 220, 221, 222, 223, 224, 225, 227, 229, 231, 237, 239, 240, 241, 243, 244, 245, 246, 247, 248, 249, 251, 252, 253, 254, 255 };
-            List<int> czworki = new List<int>(listaCzworek); 
+            List<int> czworki = new List<int>(listaCzworek);
             List<int> wciecia = new List<int>(maskaWyciec);
 
             int dlugosc = 1;
@@ -209,13 +199,12 @@ namespace fingerprint
                 for (int y = dlugosc; y < b.Height - dlugosc; y++)
                 {
                     Color koloryOb = b.GetPixel(x, y);
-                    if (koloryOb.R == 0) nowePixele[x, y] = 0;
-                    else nowePixele[x, y] = 1;
+                    if (koloryOb.R == 0) nowePixele[x, y] = 1;
+                    else nowePixele[x, y] = 0;
                 }
             }
 
-            //int[,] nowszePixele= { { 0 } };
-            // bool flaga = true;
+            ////////////////////to do
             int r = 0;
             while (r != 155)
             {
@@ -228,20 +217,21 @@ namespace fingerprint
                         if (nowePixele[x, y] == 1)
                         {
                             if (nowePixele[x + 1, y] == 0 || nowePixele[x, y + 1] == 0 || nowePixele[x, y - 1] == 0 || nowePixele[x - 1, y] == 0)
-                            {
                                 nowePixele[x, y] = 2;
-
-                            }
-                            else
-                            {
-                                if (nowePixele[x + 1, y + 1] == 0 || nowePixele[x - 1, y + 1] == 0 || nowePixele[x - 1, y - 1] == 0 || nowePixele[x + 1, y - 1] == 0)
-                                {
-                                    nowePixele[x, y] = 3;
-                                }
-
-                            }
-                          
                         }
+                    }
+                }
+
+                for (int x = dlugosc; x < b.Width - dlugosc; x++)
+                {
+                    for (int y = dlugosc; y < b.Height - dlugosc; y++)
+                    {
+                        if (nowePixele[x, y] == 1)
+                        {
+                            if (nowePixele[x + 1, y + 1] == 0 || nowePixele[x - 1, y + 1] == 0 || nowePixele[x - 1, y - 1] == 0 || nowePixele[x + 1, y - 1] == 0)
+                                nowePixele[x, y] = 3;
+                        }
+
                     }
                 }
 
@@ -256,17 +246,10 @@ namespace fingerprint
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    
                                     if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
-                                    {
-                                        
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
-
-
-                                    }
                                 }
                             }
-                           
                             if (czworki.Contains(nowePixele[x, y]))
                                 nowePixele[x, y] = 4;
                             else
@@ -287,13 +270,7 @@ namespace fingerprint
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
-                                    {
-                                        
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
-
-
-                                    }
-                                  
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
@@ -317,12 +294,7 @@ namespace fingerprint
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 4 || nowePixele[x + i, y + j] == 3)
-                                    {
-                                        
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
-
-
-                                    }
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
@@ -346,12 +318,7 @@ namespace fingerprint
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 4)
-                                    {
-                                       
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
-
-
-                                    }
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
@@ -362,23 +329,18 @@ namespace fingerprint
 
                     }
                 }
-
-
-
-
             }
 
             for (int x = dlugosc; x < b.Width - dlugosc; x++)
             {
                 for (int y = dlugosc; y < b.Height - dlugosc; y++)
                 {
-                    if (nowePixele[x, y] == 1) nowePixele[x, y] = 255;
+                    if (nowePixele[x, y] == 0) nowePixele[x, y] = 255;
+                    if (nowePixele[x, y] == 1) nowePixele[x, y] = 0;
                     b.SetPixel(x, y, Color.FromArgb(nowePixele[x, y], nowePixele[x, y], nowePixele[x, y]));
-
                 }
             }
             obrazek.Source = ConvertBitmapImage(b);
-
         }
     }
 }
