@@ -65,10 +65,10 @@ namespace fingerprint
         }
         #endregion
 
-        private void BinaryzacjaAutomatyczna(object sender, RoutedEventArgs e)
+        private void BinaryzacjaAutomatyczna(Bitmap b)
         {
-            BitmapImage source = obrazek_2.Source as BitmapImage;
-            Bitmap b = BitmapImage2DBitmap(source);
+            //BitmapImage source = obrazek_2.Source as BitmapImage;
+            //Bitmap b = BitmapImage2DBitmap(source);
             Szarosc(b);
 
             if (b != null)
@@ -191,6 +191,7 @@ namespace fingerprint
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
             Bitmap b = BitmapImage2DBitmap(source);
+            BinaryzacjaAutomatyczna(b);
             SzkieletyzacjaKMM(b);
         }
         private void SzkieletyzacjaKMM(Bitmap b) //po binaryzacji
@@ -210,11 +211,12 @@ namespace fingerprint
                     else nowePixele[x, y] = 1;
                 }
             }
-            int[,] nowszePixele= { { 0 } };
-
-            while (nowePixele!= nowszePixele)
+            //int[,] nowszePixele= { { 0 } };
+            // bool flaga = true;
+            int r = 0;
+            while (r == 55)
             {
-                nowszePixele = nowePixele;
+                r++;
 
                 for (int x = dlugosc; x < b.Width - dlugosc; x++)
                 {
@@ -225,6 +227,7 @@ namespace fingerprint
                             if (nowePixele[x + 1, y] == 0 || nowePixele[x, y + 1] == 0 || nowePixele[x, y - 1] == 0 || nowePixele[x - 1, y] == 0)
                             {
                                 nowePixele[x, y] = 2;
+
                             }
                             if (nowePixele[x + 1, y + 1] == 0 || nowePixele[x - 1, y + 1] == 0 || nowePixele[x - 1, y - 1] == 0 || nowePixele[x + 1, y - 1] == 0)
                             {
@@ -346,7 +349,7 @@ namespace fingerprint
                     }
                 }
 
-                
+
 
 
             }
