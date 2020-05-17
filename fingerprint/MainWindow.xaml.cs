@@ -355,8 +355,9 @@ namespace fingerprint
 
         private void SzukanieRozwidlen(Bitmap b)
         {
-            int dlugosc = 1;
-            int cn = 0;
+            Bitmap bb = b;
+            int dlugosc = 2;
+            int[,] cn = new int[b.Width, b.Height];
             int[,] nowePixele = new int[b.Width, b.Height];
             for (int x = dlugosc; x < b.Width - dlugosc; x++)
             {
@@ -374,7 +375,7 @@ namespace fingerprint
                 {
                     if (nowePixele[x, y] == 1)
                     {
-                        cn = ((nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
+                        cn[x, y] = ((nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
                               (nowePixele[x - 1, y + 1] + nowePixele[x - 1, y]) + //2-3
                               (nowePixele[x - 1, y] + nowePixele[x - 1, y - 1]) + //3-4
                               (nowePixele[x - 1, y - 1] + nowePixele[x, y - 1]) + //4-5
@@ -383,72 +384,56 @@ namespace fingerprint
                               (nowePixele[x + 1, y] + nowePixele[x + 1, y + 1]) + //7-8
                               (nowePixele[x + 1, y + 1] + nowePixele[x, y + 1])) / 2; //8-1
 
-                        if (cn == 0) //pojedyńczy punkt - mutacja
+
+
+                        if (cn[x, y] == 0) //pojedyńczy punkt - mutacja
                         {
-                            //for (int i = -1; i <= 1; i++)
-                            //{
-                            //    for (int j = -1; j <= 1; j++)
-                            //    {
-                            //        if (nowePixele[x + i, y + j] == 1)
-                            //            b.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
-                            //    }
-                            //}
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
 
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
 
+                            bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
 
-                           /* b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
-
-                            b.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
-
-                            b.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
-
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
                         }
-                        if (cn == 1) //zakończenie krawędzi - mutacja
+                        if (cn[x, y] == 1) //zakończenie krawędzi - mutacja
                         {
-                            /*for (int i = -1; i <= 1; i++)
-                            {
-                                for (int j = -1; j <= 1; j++)
-                                {
-                                    if (nowePixele[x + i, y + j] == 1)
-                                        b.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
-                                }
-                            }*/
-                           /* b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+                            /*bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 255));
 
-                            b.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 255));
 
-                            b.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(255, 0, 255));
 
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 255));
+
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 255));*/
                         }
-                        if (cn == 2) //kontynuacja krawędzi - brak mutacji
+                        if (cn[x, y] == 2) //kontynuacja krawędzi - brak mutacji
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
@@ -458,28 +443,28 @@ namespace fingerprint
                                         b.SetPixel(x + i, y + j, Color.FromArgb(0, 0, 255));
                                 }
                             }*/
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x - 2, y, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 0));
+                            /* b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 2, y, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 0));
 
-                            b.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 0));
 
-                            b.SetPixel(x, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x, y + 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x, y + 2, Color.FromArgb(255, 0, 0));
 
-                            b.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 0));
 
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x + 2, y, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 0));
-                            b.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 2, y, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 0));
+                             b.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 0));*/
                         }
-                        if (cn == 3) //rozwidlenie - mutacja
+                        if (cn[x, y] == 3) //rozwidlenie - mutacja
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
@@ -489,28 +474,28 @@ namespace fingerprint
                                         b.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
                                 }
                             }*/
-                          /*  b.SetPixel(x - 2, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x - 2, y, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x - 2, y + 1, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x - 2, y + 2, Color.FromArgb(220, 0, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(220, 90, 255));
 
-                            b.SetPixel(x - 1, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 90, 255));
 
-                            b.SetPixel(x, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x, y + 2, Color.FromArgb(220, 0, 255));
+                            bb.SetPixel(x, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(220, 90, 255));
 
-                            b.SetPixel(x + 1, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x + 1, y + 2, Color.FromArgb(220, 0, 255));
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(220, 90, 255));
 
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x + 2, y, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x + 2, y + 1, Color.FromArgb(220, 0, 255));
-                            b.SetPixel(x + 2, y + 2, Color.FromArgb(220, 0, 255));*/
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(220, 90, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(220, 90, 255));
                         }
-                        if (cn == 4) //skrzyżowanie - mutacja
+                        if (cn[x, y] == 4) //skrzyżowanie - mutacja
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
@@ -545,20 +530,27 @@ namespace fingerprint
                 }
             }
 
-
-
-
-
-
-            obrazek.Source = ConvertBitmapImage(b);
-
-
+            obrazek.Source = ConvertBitmapImage(bb);
         }
 
 
 
+        private void Mutacje(object sender, RoutedEventArgs e)
+        {
+            BitmapImage source = obrazek_2.Source as BitmapImage;
+            Bitmap b = BitmapImage2DBitmap(source);
+            BinaryzacjaAutomatyczna(b);
+            SzkieletyzacjaKMM(b);
+            SzukanieRozwidlen(b);
+        }
 
 
+        private void UsuwanieMutacji(Bitmap b)
+        {
+
+
+        }
 
     }
+
 }

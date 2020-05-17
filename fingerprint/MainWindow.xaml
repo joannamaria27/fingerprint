@@ -34,7 +34,7 @@
         <Image Grid.Column="1" Grid.Row="0" Name="obrazek_2" HorizontalAlignment="Right" Height="200" Margin="0,72,120,0" VerticalAlignment="Top" Width="200"/>
 
         <Button Grid.Row="2" Margin="300,25,300,-60" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Rozwidlenia">rozgałęzienia</Button>
-        <Button Grid.Row="2" Margin="300,65,300,-100" Grid.RowSpan="3" Grid.ColumnSpan="2">przefiltrowanie rozgałęzień</Button>
+        <Button Grid.Row="2" Margin="300,65,300,-100" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
    
     </Grid>
 
