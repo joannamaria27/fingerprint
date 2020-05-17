@@ -19,6 +19,8 @@ namespace fingerprint
             InitializeComponent();
             obrazek_2.Source = obrazek.Source;
         }
+
+        #region Odczyt/Zapis
         private void ZaladujZPliku(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -39,9 +41,27 @@ namespace fingerprint
                 }
             }
         }
+        private void ZapiszDoPliku(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "All supported graphics|*.jpg;*.jpeg;*.png|" +
+                          "JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|" +
+                          "Portable Network Graphic (*.png)|*.png"
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                FileStream saveStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate);
+                BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create((BitmapImage)obrazek.Source));
+                encoder.Save(saveStream);
+                saveStream.Close();
+            }
+        }
+        #endregion
 
         #region ZamianaBitmap
-        private Bitmap BitmapImage2DBitmap(BitmapImage bitmapImage)
+        private Bitmap BitmapImageToBitmap(BitmapImage bitmapImage)
         {
             using MemoryStream outStream = new MemoryStream();
             BitmapEncoder enc = new BmpBitmapEncoder();
@@ -51,7 +71,7 @@ namespace fingerprint
 
             return new Bitmap(bitmap);
         }
-        public BitmapImage ConvertBitmapImage(Bitmap bitmap)
+        public BitmapImage BitmapToBitmapImage(Bitmap bitmap)
         {
             MemoryStream ms = new MemoryStream();
             bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
@@ -65,98 +85,9 @@ namespace fingerprint
         }
         #endregion
 
-        private void BinaryzacjaAutomatyczna(Bitmap b)
-        {
-            Szarosc(b);
+        #region Binaryzacja
 
-            if (b != null)
-            {
-                Color curColor;
-                int kolor;
-                int prog;
-                prog = ProgOtsu(b);
-
-                for (int i = 0; i < b.Width; i++)
-                {
-                    for (int j = 0; j < b.Height; j++)
-                    {
-                        curColor = b.GetPixel(i, j);
-                        kolor = curColor.R;
-
-                        if (kolor > prog)
-                        {
-                            kolor = 255;
-                        }
-                        else
-                            kolor = 0;
-                        b.SetPixel(i, j, Color.FromArgb(kolor, kolor, kolor));
-                    }
-                }
-                obrazek.Source = ConvertBitmapImage(b);
-            }
-        }
-
-        private int ProgOtsu(Bitmap b)
-        {
-            int[] histogram = new int[256];
-
-            for (int m = 0; m < b.Width; m++)
-            {
-                for (int n = 0; n < b.Height; n++)
-                {
-                    Color pixel = b.GetPixel(m, n);
-                    histogram[pixel.R]++;
-                }
-            }
-
-            long[] pob = new long[256];
-            long[] pt = new long[256];
-
-            for (int t = 0; t < 256; t++)
-            {
-                for (int t1 = 0; t1 <= t; t1++)
-                    pob[t] += histogram[t1];
-                for (int t1 = t + 1; t1 < 256; t1++)
-                    pt[t] += histogram[t1];
-            }
-
-            double[] srOb = new double[256];
-            double[] srT = new double[256];
-
-            for (int t = 0; t < 256; t++)
-            {
-                for (int k = 0; k <= t; k++)
-                    srOb[t] += (k * histogram[k]);
-                for (int k = t + 1; k < 256; k++)
-                    srT[t] += (k * histogram[k]);
-            }
-
-            for (int t = 0; t < 256; t++)
-            {
-                if (pob[t] != 0)
-                    srOb[t] = srOb[t] / pob[t];
-                if (pt[t] != 0)
-                    srT[t] = srT[t] / pt[t];
-            }
-
-            double[] wariancjaMiedzy = new double[256];
-            double maks = 0;
-
-            for (int t = 0; t < 256; t++)
-                wariancjaMiedzy[t] = pob[t] * pt[t] * (srOb[t] - srT[t]) * (srOb[t] - srT[t]);
-
-            int x = 0;
-            for (int w = 0; w < 256; w++)
-            {
-                if (wariancjaMiedzy[w] > maks)
-                {
-                    maks = wariancjaMiedzy[w];
-                    x = w;
-                }
-            }
-            return x;
-        }
-        private void Szarosc(Bitmap bmp)
+        private void ZamianaNaOdcienSzarosci(Bitmap bmp)
         {
             Color p;
             for (int y = 0; y < bmp.Height; y++)
@@ -174,17 +105,102 @@ namespace fingerprint
                     bmp.SetPixel(x, y, Color.FromArgb(a, avg, avg, avg));
                 }
             }
-            obrazek_2.Source = ConvertBitmapImage(bmp);
+            obrazek_2.Source = BitmapToBitmapImage(bmp);
         }
+        private void BinaryzacjaAutomatyczna(Bitmap b) //otsu
+        {
+            ZamianaNaOdcienSzarosci(b);
+            if (b != null)
+            {
+                Color curColor;
+                int kolor;
+                int prog;
+                prog = ObliczanieProgOtsu(b);
 
-        private void Szkieletyzacja(object sender, RoutedEventArgs e)
+                for (int i = 0; i < b.Width; i++)
+                {
+                    for (int j = 0; j < b.Height; j++)
+                    {
+                        curColor = b.GetPixel(i, j);
+                        kolor = curColor.R;
+
+                        if (kolor > prog)
+                        {
+                            kolor = 255;
+                        }
+                        else
+                            kolor = 0;
+                        b.SetPixel(i, j, Color.FromArgb(kolor, kolor, kolor));
+                    }
+                }
+                obrazek.Source = BitmapToBitmapImage(b);
+            }
+        }
+        private int ObliczanieProgOtsu(Bitmap b)
+        {
+            int[] histogram = new int[256];
+            for (int m = 0; m < b.Width; m++)
+            {
+                for (int n = 0; n < b.Height; n++)
+                {
+                    Color pixel = b.GetPixel(m, n);
+                    histogram[pixel.R]++;
+                }
+            }
+            long[] pob = new long[256];
+            long[] pt = new long[256];
+
+            for (int t = 0; t < 256; t++)
+            {
+                for (int t1 = 0; t1 <= t; t1++)
+                    pob[t] += histogram[t1];
+                for (int t1 = t + 1; t1 < 256; t1++)
+                    pt[t] += histogram[t1];
+            }
+            double[] srOb = new double[256];
+            double[] srT = new double[256];
+
+            for (int t = 0; t < 256; t++)
+            {
+                for (int k = 0; k <= t; k++)
+                    srOb[t] += (k * histogram[k]);
+                for (int k = t + 1; k < 256; k++)
+                    srT[t] += (k * histogram[k]);
+            }
+            for (int t = 0; t < 256; t++)
+            {
+                if (pob[t] != 0)
+                    srOb[t] = srOb[t] / pob[t];
+                if (pt[t] != 0)
+                    srT[t] = srT[t] / pt[t];
+            }
+
+            double[] wariancjaMiedzy = new double[256];
+            double maks = 0;
+            for (int t = 0; t < 256; t++)
+                wariancjaMiedzy[t] = pob[t] * pt[t] * (srOb[t] - srT[t]) * (srOb[t] - srT[t]);
+            int x = 0;
+            for (int w = 0; w < 256; w++)
+            {
+                if (wariancjaMiedzy[w] > maks)
+                {
+                    maks = wariancjaMiedzy[w];
+                    x = w;
+                }
+            }
+            return x;
+        }
+        #endregion
+
+        #region Szkieletyzacja
+        private void BinaryzacjaISzkieletyzacja(object sender, RoutedEventArgs e)
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
-            Bitmap b = BitmapImage2DBitmap(source);
+            Bitmap b = BitmapImageToBitmap(source);
             BinaryzacjaAutomatyczna(b);
-            SzkieletyzacjaKMM(b);
+            KMM(b);
         }
-        private void SzkieletyzacjaKMM(Bitmap b)
+        private void KMM(Bitmap b)
         {
             int[] listaCzworek = { 3, 6, 7, 12, 14, 15, 24, 28, 30, 48, 56, 60, 96, 112, 120, 129, 131, 135, 192, 193, 195, 224, 225, 240 };
             int[,] maksaSprawdzajaca = { { 128, 64, 32 }, { 1, 0, 16 }, { 2, 4, 8 } };
@@ -204,7 +220,7 @@ namespace fingerprint
                 }
             }
 
-            ////////////////////to do
+            ////////////////////////////////////////////////////////////////////////to do ------- petla while wykonuje się dopoki którykolwiek pixel sie zmienia
             int r = 0;
             while (r != 155)
             {
@@ -231,7 +247,6 @@ namespace fingerprint
                             if (nowePixele[x + 1, y + 1] == 0 || nowePixele[x - 1, y + 1] == 0 || nowePixele[x - 1, y - 1] == 0 || nowePixele[x + 1, y - 1] == 0)
                                 nowePixele[x, y] = 3;
                         }
-
                     }
                 }
 
@@ -278,7 +293,6 @@ namespace fingerprint
                             else
                                 nowePixele[x, y] = 1;
                         }
-
                     }
                 }
 
@@ -302,7 +316,6 @@ namespace fingerprint
                             else
                                 nowePixele[x, y] = 1;
                         }
-
                     }
                 }
 
@@ -326,7 +339,6 @@ namespace fingerprint
                             else
                                 nowePixele[x, y] = 1;
                         }
-
                     }
                 }
             }
@@ -340,20 +352,22 @@ namespace fingerprint
                     b.SetPixel(x, y, Color.FromArgb(nowePixele[x, y], nowePixele[x, y], nowePixele[x, y]));
                 }
             }
-            obrazek.Source = ConvertBitmapImage(b);
+            obrazek.Source = BitmapToBitmapImage(b);
         }
 
-        private void Rozwidlenia(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Minucje
+        private void Rozwidlenia(object sender, RoutedEventArgs e)  //razem z binaryzacja i szkieletyzacją  ------ póżniej zmienić i przycisk aktywny tylko po wykonaniu szkieletyczacji czy coś takiego --- do przemyslenia
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
-            Bitmap b = BitmapImage2DBitmap(source);
+            Bitmap b = BitmapImageToBitmap(source);
             BinaryzacjaAutomatyczna(b);
-            SzkieletyzacjaKMM(b);
-            SzukanieRozwidlen(b);
+            KMM(b);
+            SzukanieMinucji(b);
         }
 
-
-        private void SzukanieRozwidlen(Bitmap b)
+        private void SzukanieMinucji(Bitmap b)
         {
             Bitmap bb = b;
             int dlugosc = 2;
@@ -384,11 +398,9 @@ namespace fingerprint
                               (nowePixele[x + 1, y] + nowePixele[x + 1, y + 1]) + //7-8
                               (nowePixele[x + 1, y + 1] + nowePixele[x, y + 1])) / 2; //8-1
 
-
-
-                        if (cn[x, y] == 0) //pojedyńczy punkt - mutacja
+                        if (cn[x, y] == 0) //pojedyńczy punkt - minucja
                         {
-                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
                             bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
                             bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
                             bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
@@ -409,7 +421,7 @@ namespace fingerprint
                             bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
                             bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
                         }
-                        if (cn[x, y] == 1) //zakończenie krawędzi - mutacja
+                        if (cn[x, y] == 1) //zakończenie krawędzi - minucja
                         {
 
                             /*bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
@@ -433,47 +445,49 @@ namespace fingerprint
                             bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 255));
                             bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 255));*/
                         }
-                        if (cn[x, y] == 2) //kontynuacja krawędzi - brak mutacji
+                        if (cn[x, y] == 2) //kontynuacja krawędzi - brak minucji
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1)
-                                        b.SetPixel(x + i, y + j, Color.FromArgb(0, 0, 255));
+                                        bb.SetPixel(x + i, y + j, Color.FromArgb(0, 0, 255));
                                 }
                             }*/
+
                             /* b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x - 2, y, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 2, y, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 0));
 
-                             b.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 0));
 
-                             b.SetPixel(x, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x, y + 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x, y + 2, Color.FromArgb(255, 0, 0));
 
-                             b.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 0));
 
-                             b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x + 2, y, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 0));
-                             b.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 0));*/
+                             bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 2, y, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 0));
+                             bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 0));*/
                         }
-                        if (cn[x, y] == 3) //rozwidlenie - mutacja
+                        if (cn[x, y] == 3) //rozwidlenie - minucja
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1)
-                                        b.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
+                                        bb.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
                                 }
                             }*/
+
                             bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
                             bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
                             bb.SetPixel(x - 2, y, Color.FromArgb(220, 90, 255));
@@ -495,62 +509,61 @@ namespace fingerprint
                             bb.SetPixel(x + 2, y + 1, Color.FromArgb(220, 90, 255));
                             bb.SetPixel(x + 2, y + 2, Color.FromArgb(220, 90, 255));
                         }
-                        if (cn[x, y] == 4) //skrzyżowanie - mutacja
+                        if (cn[x, y] == 4) //skrzyżowanie - minucja
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
                                     if (nowePixele[x + i, y + j] == 1)
-                                        b.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
+                                        bb.SetPixel(x + i, y + j, Color.FromArgb(255, 0, 0));
                                 }
                             }*/
+
                             /*b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
 
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                            b.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
                         }
                     }
                 }
             }
-
-            obrazek.Source = ConvertBitmapImage(bb);
+            obrazek.Source = BitmapToBitmapImage(bb);
         }
 
-
-
-        private void Mutacje(object sender, RoutedEventArgs e)
+        private void Przefiltrowanie(object sender, RoutedEventArgs e)
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
-            Bitmap b = BitmapImage2DBitmap(source);
-            BinaryzacjaAutomatyczna(b);
-            SzkieletyzacjaKMM(b);
-            SzukanieRozwidlen(b);
+            Bitmap b = BitmapImageToBitmap(source);
+            /* BinaryzacjaAutomatyczna(b);
+             KMM(b);
+             SzukanieRozwidlen(b);*/
+            UsuwanieFalszywychMinucji(b);
         }
 
 
-        private void UsuwanieMutacji(Bitmap b)
+        private void UsuwanieFalszywychMinucji(Bitmap b)
         {
 
-
+            obrazek.Source = BitmapToBitmapImage(b);
         }
-
+        #endregion
     }
 
 }

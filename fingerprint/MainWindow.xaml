@@ -24,9 +24,11 @@
                 <MenuItem Background="LightGray" Header="_Obraz" >
                     <MenuItem Background="LightGray" Header="_Wczytaj z pliku" Click="ZaladujZPliku"/>
                     <Separator/>
+                    <MenuItem Background="LightGray" Header="_Zapisz do pliku" Click="ZapiszDoPliku"/>
+
                 </MenuItem>
                 <!--<MenuItem Background="LightGray" Header="_Binaryzacja" Click="BinaryzacjaAutomatyczna" />-->
-                <MenuItem Background="LightGray" Header="_Binaryzacja i szkieletyzacja" Click="Szkieletyzacja"/>
+                <MenuItem Background="LightGray" Header="_Binaryzacja i szkieletyzacja" Click="BinaryzacjaISzkieletyzacja"/>
             </Menu>
         </DockPanel>
 
