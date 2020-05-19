@@ -223,7 +223,7 @@ namespace fingerprint
 
             ////////////////////////////////////////////////////////////////////////to do ------- petla while wykonuje się dopoki którykolwiek pixel sie zmienia
             int r = 0;
-            while (r != 155)
+            while (r != 1550)
             {
                 r++;
 
@@ -391,13 +391,16 @@ namespace fingerprint
                 {
                     if (nowePixele[x, y] == 1)
                     {
-                        cn[x, y] =Math.Abs( ((nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
+
+                        cn[x, y] = Math.Abs((nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
+
                               (nowePixele[x - 1, y + 1] - nowePixele[x - 1, y]) + //2-3
                               (nowePixele[x - 1, y] - nowePixele[x - 1, y - 1]) + //3-4
                               (nowePixele[x - 1, y - 1] - nowePixele[x, y - 1]) + //4-5
                               (nowePixele[x, y - 1] - nowePixele[x + 1, y - 1]) + //5-6
                               (nowePixele[x + 1, y - 1] - nowePixele[x + 1, y]) + //6-7
                               (nowePixele[x + 1, y] - nowePixele[x + 1, y + 1]) + //7-8
+
                               (nowePixele[x + 1, y + 1] - nowePixele[x, y + 1])) / 2); //8-1                
                     }
                 }
@@ -435,15 +438,18 @@ namespace fingerprint
                             bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
                             bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
                             bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
+
                         }
                         if (cn[x, y] == 1) //zakończenie krawędzi - minucja
                         {
+
 
                         bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 255));
+
 
                         bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 255));
@@ -454,6 +460,7 @@ namespace fingerprint
                         bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 255));
 
+
                         bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x + 2, y, Color.FromArgb(255, 0, 255));
@@ -461,6 +468,7 @@ namespace fingerprint
                         bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 255));
                     }
                     if (cn[x, y] == 3) //rozwidlenie - minucja
+
                         {
                             /*for (int i = -1; i <= 1; i++)
                             {
