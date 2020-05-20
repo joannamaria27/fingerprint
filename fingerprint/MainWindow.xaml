@@ -20,6 +20,7 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
@@ -44,11 +45,12 @@
             <Image Name="obrazek_2" Margin="10, 10"/>
         </Border>
 
-        <Button x:Name="rozgalezienia_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="1"  Click="Rozwidlenia" Grid.ColumnSpan="2" Width="260">rozgałęzienia</Button>
-        <Button x:Name="filtr_rozgalezien_przycisk" IsEnabled="False" Grid.Row="3" Grid.Column="1"  Click="Przefiltrowanie" Grid.ColumnSpan="2" Width="260" Margin="0, 5">przefiltrowanie rozgałęzień</Button>
-        <Button x:Name="reset" IsEnabled="True" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Width="100" Margin="0, 20" Click="reset_Click">reset</Button>
+        <Button Grid.Row="2" Grid.Column="1" Width="260" Grid.ColumnSpan="2" Click="BinaryzacjaISzkieletyzacja" Margin="0, 5">binaryzacja i szkieletyzacja</Button>
+        <Button Grid.Row="3" Grid.Column="1" Width="260" x:Name="rozgalezienia_przycisk" IsEnabled="False" Click="Rozwidlenia" Grid.ColumnSpan="2"  Margin="0, 5">rozgałęzienia</Button>
+        <Button Grid.Row="4" Grid.Column="1" Width="260" x:Name="filtr_rozgalezien_przycisk" IsEnabled="False"  Click="Przefiltrowanie" Grid.ColumnSpan="2" Margin="0, 5">przefiltrowanie rozgałęzień</Button>
+        <Button Grid.Row="6" Grid.Column="1" Width="100" x:Name="reset" Grid.ColumnSpan="2" Margin="0, 20" Click="reset_Click">reset</Button>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Center">
             <Label>Ilość pixeli przy której następuje odcięcie:</Label>
             <TextBox Name="liczba_pikseli" Margin="5, 4, 0, 4" TextAlignment="Center" MinWidth="30" PreviewTextInput="liczba_pikseli_PreviewTextInput">0</TextBox>
         </StackPanel>

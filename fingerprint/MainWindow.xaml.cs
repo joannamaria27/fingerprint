@@ -44,6 +44,7 @@ namespace fingerprint
                 }
             }
 
+            liczba_pikseli.BorderBrush = Brushes.Black;
             left_border.BorderBrush = Brushes.Black;
             right_border.BorderBrush = Brushes.Black;
             left_border.BorderThickness = new Thickness(1);
