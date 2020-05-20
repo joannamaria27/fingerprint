@@ -298,7 +298,6 @@ namespace fingerprint
                             else
                             {
                                 nowePixele[x, y] = 1;
-                                // zmiana = true;
                             }
                         }
                     }
@@ -404,15 +403,14 @@ namespace fingerprint
                 {
                     if (nowePixele[x, y] == 1)
                     {
-                        cn[x, y] = Math.Abs(((nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
-
-                              (nowePixele[x - 1, y + 1] - nowePixele[x - 1, y]) + //2-3
-                              (nowePixele[x - 1, y] - nowePixele[x - 1, y - 1]) + //3-4
-                              (nowePixele[x - 1, y - 1] - nowePixele[x, y - 1]) + //4-5
-                              (nowePixele[x, y - 1] - nowePixele[x + 1, y - 1]) + //5-6
-                              (nowePixele[x + 1, y - 1] - nowePixele[x + 1, y]) + //6-7
-                              (nowePixele[x + 1, y] - nowePixele[x + 1, y + 1]) + //7-8
-                             (nowePixele[x + 1, y + 1] - nowePixele[x, y + 1])) / 2); //8-1    
+                        cn[x, y] = ((Math.Abs(nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
+                                           Math.Abs(nowePixele[x - 1, y + 1] - nowePixele[x - 1, y]) + //2-3
+                                           Math.Abs(nowePixele[x - 1, y] - nowePixele[x - 1, y - 1]) + //3-4
+                                            Math.Abs(nowePixele[x - 1, y - 1] - nowePixele[x, y - 1]) + //4-5
+                                            Math.Abs(nowePixele[x, y - 1] - nowePixele[x + 1, y - 1]) + //5-6
+                                           Math.Abs(nowePixele[x + 1, y - 1] - nowePixele[x + 1, y]) + //6-7
+                                           Math.Abs(nowePixele[x + 1, y] - nowePixele[x + 1, y + 1]) + //7-8
+                                           Math.Abs(nowePixele[x + 1, y + 1] - nowePixele[x, y + 1])) / 2); //8-1    
                     }
                 }
             }
@@ -429,7 +427,7 @@ namespace fingerprint
                 {
                     if (cn[x, y] == 0) //pojedyńczy punkt - minucja
                     {
-                        bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
+                        /*bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
                         bb.SetPixel(x - 2, y - 1, Color.FromArgb(0, 0, 255));
                         bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
                         bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
@@ -448,7 +446,7 @@ namespace fingerprint
                         bb.SetPixel(x + 2, y - 1, Color.FromArgb(0, 0, 255));
                         bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
                         bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                        bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
 
                     }
                     if (cn[x, y] == 1) //zakończenie krawędzi - minucja
@@ -583,8 +581,7 @@ namespace fingerprint
             Bitmap b = BitmapImageToBitmap(source);
             BinaryzacjaAutomatyczna(b);
             KMM(b);
-            SzukanieMinucji(b);
-            UsuwanieFalszywychMinucji(b);
+            SzukanieMinucjiProbne(b);
         }
 
 
@@ -594,6 +591,141 @@ namespace fingerprint
             obrazek.Source = BitmapToBitmapImage(b);
         }
 
+        private void SzukanieMinucjiProbne(Bitmap b)
+        {
+            Bitmap bb = b;
+            int dlugosc = 2;
+            int[,] cn = new int[b.Width, b.Height];
+            int[,] nowePixele = new int[b.Width, b.Height];
+            int[,,] filtr = new int[10000, b.Width, b.Height];
+            for (int x = dlugosc; x < b.Width - dlugosc; x++)
+            {
+                for (int y = dlugosc; y < b.Height - dlugosc; y++)
+                {
+                    Color koloryOb = b.GetPixel(x, y);
+                    if (koloryOb.R == 0) nowePixele[x, y] = 1;
+                    else nowePixele[x, y] = 0;
+                }
+            }
+
+            for (int x = dlugosc; x < b.Width - dlugosc; x++)
+            {
+                for (int y = dlugosc; y < b.Height - dlugosc; y++)
+                {
+                    if (nowePixele[x, y] == 1)
+                    {
+                        cn[x, y] = ((Math.Abs(nowePixele[x, y + 1] - nowePixele[x - 1, y + 1]) + //1-2
+                                            Math.Abs(nowePixele[x - 1, y + 1] - nowePixele[x - 1, y]) + //2-3
+                                            Math.Abs(nowePixele[x - 1, y] - nowePixele[x - 1, y - 1]) + //3-4
+                                             Math.Abs(nowePixele[x - 1, y - 1] - nowePixele[x, y - 1]) + //4-5
+                                             Math.Abs(nowePixele[x, y - 1] - nowePixele[x + 1, y - 1]) + //5-6
+                                            Math.Abs(nowePixele[x + 1, y - 1] - nowePixele[x + 1, y]) + //6-7
+                                            Math.Abs(nowePixele[x + 1, y] - nowePixele[x + 1, y + 1]) + //7-8
+                                            Math.Abs(nowePixele[x + 1, y + 1] - nowePixele[x, y + 1])) / 2); //8-1    
+
+                        if (cn[x, y] == 0) //pojedyńczy punkt - minucja
+                        {
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 255, 0));
+
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 255, 0));
+
+                            bb.SetPixel(x, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(0, 255, 0));
+
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 255, 0));
+
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 255, 0));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 255, 0));
+                        }
+                        if (cn[x, y] == 1) //zakończenie krawędzi - minucja - niebieski
+                        {
+
+                            //tutaj dodać warunek o brzegach i może jes
+
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
+                            bb.SetPixel(x - 2, y - 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
+
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+
+                            bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
+
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
+
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y - 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
+
+                        }
+                        if (cn[x, y] == 3) //rozwidlenie - minucja - różowy
+                        {
+                            bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y - 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 0, 255));
+
+
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 0, 255));
+
+                            bb.SetPixel(x, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(255, 0, 255));
+
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 0, 255));
+
+
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y - 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 0, 255));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 0, 255));
+                        }
+                        if (cn[x, y] == 4) //skrzyżowanie - minucja - zółty
+                        {
+                            b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x - 2, y - 1, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x - 2, y, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 255, 0));
+
+                            bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 255, 0));
+
+                            bb.SetPixel(x, y - 2, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x, y + 2, Color.FromArgb(255, 255, 0));
+
+                            bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 255, 0));
+
+                            bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x + 2, y - 1, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x + 2, y, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 255, 0));
+                            bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 255, 0));
+                        }
+                    }
+                }
+            }
+            obrazek.Source = BitmapToBitmapImage(bb);
+        }
     }
 }
 
