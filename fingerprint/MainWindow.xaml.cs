@@ -24,6 +24,8 @@ namespace fingerprint
         #region Odczyt/Zapis
         private void ZaladujZPliku(object sender, RoutedEventArgs e)
         {
+            rozgalezienia_przycisk.IsEnabled = false;
+            filtr_rozgalezien_przycisk.IsEnabled = false;
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Image files (*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg;)|*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg; | All files (*.*)|*.*"
@@ -368,6 +370,7 @@ namespace fingerprint
                 }
             }
             obrazek.Source = BitmapToBitmapImage(b);
+            obrazek_2.Source = BitmapToBitmapImage(b);
 
             rozgalezienia_przycisk.IsEnabled = true;
             filtr_rozgalezien_przycisk.IsEnabled = true;
@@ -380,8 +383,8 @@ namespace fingerprint
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
-            BinaryzacjaAutomatyczna(b);
-            KMM(b);
+           /* BinaryzacjaAutomatyczna(b);
+            KMM(b);*/
             SzukanieMinucji(b, UsuwanieMinucjiZKrawędziOdcisku(b));
         }
 
@@ -632,8 +635,6 @@ namespace fingerprint
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
-            BinaryzacjaAutomatyczna(b);
-            KMM(b);
             SzukanieMinucjiProbne(b);
         }
 
