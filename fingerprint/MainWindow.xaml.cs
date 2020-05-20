@@ -551,7 +551,6 @@ namespace fingerprint
                 {
                     if (cn[i, j] == choice) cn = maskSeventoSeven(cn, i, j, choice);
                 }
-
             }
             return cn;
         }
