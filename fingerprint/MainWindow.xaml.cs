@@ -353,6 +353,9 @@ namespace fingerprint
                 }
             }
             obrazek.Source = BitmapToBitmapImage(b);
+
+            rozgalezienia_przycisk.IsEnabled = true;
+            filtr_rozgalezien_przycisk.IsEnabled = true;
         }
 
         #endregion

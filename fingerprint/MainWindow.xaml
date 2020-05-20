@@ -37,12 +37,12 @@
             <Image Name="obrazek" Margin="10, 10"/>
         </Border>
 
-        <Border x:Name="borderEditable" BorderBrush="Black" BorderThickness="1" Grid.Column="2" Grid.Row="1" Margin="10, 10">
+        <Border x:Name="borderEditable" BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="2" Margin="10, 10">
             <Image Name="obrazek_2" Margin="10, 10"/>
         </Border>
-        
-        <Button Grid.Row="2" Grid.Column="1"  Click="Rozwidlenia">rozgałęzienia</Button>
-        <Button Grid.Row="2" Grid.Column="2"  Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
+
+        <Button x:Name="rozgalezienia_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="1"  Click="Rozwidlenia">rozgałęzienia</Button>
+        <Button x:Name="filtr_rozgalezien_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="2"  Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
 
     </Grid>
 
