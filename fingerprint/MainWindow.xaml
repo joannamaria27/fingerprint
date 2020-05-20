@@ -44,6 +44,14 @@
         <Button x:Name="rozgalezienia_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="1"  Click="Rozwidlenia">rozgałęzienia</Button>
         <Button x:Name="filtr_rozgalezien_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="2"  Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="270,0,250,-30" Grid.RowSpan="3" Grid.ColumnSpan="2">
+            <Label>ilość pixeli przy której następuje odcięcie:</Label>
+            <TextBox Name="liczba_pikseli" Margin="5 4 0 4" TextAlignment="Center" MinWidth="30">0</TextBox>
+        </StackPanel>
+        <Button Grid.Row="2" Margin="300,30,300,-60" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Rozwidlenia">rozgałęzienia</Button>
+        <Button Grid.Row="2" Margin="300,65,300,-100" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
+   
+
     </Grid>
 
 </Window>
