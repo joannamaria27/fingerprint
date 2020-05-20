@@ -8,18 +8,19 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="385" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="15"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="15"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="15" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,250">
+        <DockPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="6" >
             <Menu DockPanel.Dock="Top" IsMainMenu="True" >
                 <MenuItem Background="LightGray" Header="_Obraz" >
                     <MenuItem Background="LightGray" Header="_Wczytaj z pliku" Click="ZaladujZPliku"/>
@@ -32,8 +33,16 @@
             </Menu>
         </DockPanel>
 
-        <Image Grid.Column="0" Grid.Row="0" Name="obrazek" HorizontalAlignment="Left" Height="200" Margin="120,72,0,0" VerticalAlignment="Top" Width="200"/>
-        <Image Grid.Column="1" Grid.Row="0" Name="obrazek_2" HorizontalAlignment="Right" Height="200" Margin="0,72,120,0" VerticalAlignment="Top" Width="200"/>
+        <Border x:Name="borderOriginal" BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="1" Margin="10,10">
+            <Image Name="obrazek" Margin="10, 10"/>
+        </Border>
+
+        <Border x:Name="borderEditable" BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="2" Margin="10, 10">
+            <Image Name="obrazek_2" Margin="10, 10"/>
+        </Border>
+
+        <Button x:Name="rozgalezienia_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="1"  Click="Rozwidlenia">rozgałęzienia</Button>
+        <Button x:Name="filtr_rozgalezien_przycisk" IsEnabled="False" Grid.Row="2" Grid.Column="2"  Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
 
         <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="270,0,250,-30" Grid.RowSpan="3" Grid.ColumnSpan="2">
             <Label>ilość pixeli przy której następuje odcięcie:</Label>
@@ -42,6 +51,7 @@
         <Button Grid.Row="2" Margin="300,30,300,-60" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Rozwidlenia">rozgałęzienia</Button>
         <Button Grid.Row="2" Margin="300,65,300,-100" Grid.RowSpan="3" Grid.ColumnSpan="2" Click="Przefiltrowanie">przefiltrowanie rozgałęzień</Button>
    
+
     </Grid>
 
 </Window>
