@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Brushes = System.Windows.Media.Brushes;
 
 
 namespace fingerprint
@@ -24,8 +26,6 @@ namespace fingerprint
         #region Odczyt/Zapis
         private void ZaladujZPliku(object sender, RoutedEventArgs e)
         {
-            rozgalezienia_przycisk.IsEnabled = false;
-            filtr_rozgalezien_przycisk.IsEnabled = false;
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Image files (*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg;)|*.png;*.jpg;*.bmp;*.gif;*.tif;*.tiff;*.jpeg; | All files (*.*)|*.*"
@@ -43,6 +43,14 @@ namespace fingerprint
                     MessageBox.Show("Zły format pliku!", "Wczytywanie z pliku", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+
+            left_border.BorderBrush = Brushes.Black;
+            right_border.BorderBrush = Brushes.Black;
+            left_border.BorderThickness = new Thickness(1);
+            right_border.BorderThickness = new Thickness(1);
+
+            rozgalezienia_przycisk.IsEnabled = false;
+            filtr_rozgalezien_przycisk.IsEnabled = false;
         }
         private void ZapiszDoPliku(object sender, RoutedEventArgs e)
         {
@@ -198,8 +206,17 @@ namespace fingerprint
         #region Szkieletyzacja
         private void BinaryzacjaISzkieletyzacja(object sender, RoutedEventArgs e)
         {
+            if (obrazek.Source == null) {
+                left_border.BorderBrush = Brushes.Red;
+                right_border.BorderBrush = Brushes.Red;
+                left_border.BorderThickness = new Thickness(2);
+                right_border.BorderThickness = new Thickness(2);
+                return;
+            }
+
             BitmapImage source = obrazek_2.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
+
             BinaryzacjaAutomatyczna(b);
             KMM(b);
         }
@@ -370,7 +387,7 @@ namespace fingerprint
                 }
             }
             obrazek.Source = BitmapToBitmapImage(b);
-            obrazek_2.Source = BitmapToBitmapImage(b);
+            //obrazek_2.Source = BitmapToBitmapImage(b);
 
             rozgalezienia_przycisk.IsEnabled = true;
             filtr_rozgalezien_przycisk.IsEnabled = true;
@@ -381,10 +398,17 @@ namespace fingerprint
 
         private void Rozwidlenia(object sender, RoutedEventArgs e)  //razem z binaryzacja i szkieletyzacją  ------ póżniej zmienić i przycisk aktywny tylko po wykonaniu szkieletyczacji czy coś takiego --- do przemyslenia
         {
-            BitmapImage source = obrazek_2.Source as BitmapImage;
+            BitmapImage source = obrazek.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
-           /* BinaryzacjaAutomatyczna(b);
-            KMM(b);*/
+            /* BinaryzacjaAutomatyczna(b);
+             KMM(b);*/
+
+            if (String.IsNullOrEmpty(liczba_pikseli.Text)) {
+                liczba_pikseli.BorderBrush = Brushes.Red;
+                return;
+            }
+            else liczba_pikseli.BorderBrush = Brushes.Black;
+
             SzukanieMinucji(b, UsuwanieMinucjiZKrawędziOdcisku(b));
         }
 
@@ -633,7 +657,7 @@ namespace fingerprint
         }
         private void Przefiltrowanie(object sender, RoutedEventArgs e)
         {
-            BitmapImage source = obrazek_2.Source as BitmapImage;
+            BitmapImage source = obrazek.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
             SzukanieMinucjiProbne(b);
         }
@@ -779,6 +803,17 @@ namespace fingerprint
                 }
             }
             obrazek.Source = BitmapToBitmapImage(bb);
+        }
+
+        private void reset_Click(object sender, RoutedEventArgs e) {
+            obrazek.Source = obrazek_2.Source;
+            rozgalezienia_przycisk.IsEnabled = false;
+            filtr_rozgalezien_przycisk.IsEnabled = false;
+        }
+
+        private void liczba_pikseli_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
