@@ -221,12 +221,10 @@ namespace fingerprint
                 }
             }
 
-            ////////////////////////////////////////////////////////////////////////to do ------- petla while wykonuje się dopoki którykolwiek pixel sie zmienia
-            int r = 0;
-            while (r != 1550)
+            Boolean zmiana = false;
+            do
             {
-                r++;
-
+                zmiana = false;
                 for (int x = dlugosc; x < b.Width - dlugosc; x++)
                 {
                     for (int y = dlugosc; y < b.Height - dlugosc; y++)
@@ -262,12 +260,15 @@ namespace fingerprint
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
+                                    if (nowePixele[x + i, y + j] == 4 || nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
                                 }
                             }
                             if (czworki.Contains(nowePixele[x, y]))
+                            {
                                 nowePixele[x, y] = 4;
+                                zmiana = true;
+                            }
                             else
                                 nowePixele[x, y] = 2;
                         }
@@ -285,14 +286,20 @@ namespace fingerprint
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
+                                    if (nowePixele[x + i, y + j] == 4 || nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 3)
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
+                            {
                                 nowePixele[x, y] = 0;
+                                zmiana = true;
+                            }
                             else
+                            {
                                 nowePixele[x, y] = 1;
+                                // zmiana = true;
+                            }
                         }
                     }
                 }
@@ -308,12 +315,15 @@ namespace fingerprint
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 4 || nowePixele[x + i, y + j] == 3)
+                                    if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 4 || nowePixele[x + i, y + j] == 3 || nowePixele[x + i, y + j] == 2)
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
+                            {
                                 nowePixele[x, y] = 0;
+                                zmiana = true;
+                            }
                             else
                                 nowePixele[x, y] = 1;
                         }
@@ -331,18 +341,21 @@ namespace fingerprint
                             {
                                 for (int j = -1; j <= 1; j++)
                                 {
-                                    if (nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 4)
+                                    if (nowePixele[x + i, y + j] == 3 || nowePixele[x + i, y + j] == 1 || nowePixele[x + i, y + j] == 2 || nowePixele[x + i, y + j] == 4)
                                         nowePixele[x, y] += maksaSprawdzajaca[1 + i, 1 + j];
                                 }
                             }
                             if (wciecia.Contains(nowePixele[x, y]))
+                            {
                                 nowePixele[x, y] = 0;
+                                zmiana = true;
+                            }
                             else
                                 nowePixele[x, y] = 1;
                         }
                     }
                 }
-            }
+            } while (zmiana == true);
 
             for (int x = dlugosc; x < b.Width - dlugosc; x++)
             {
@@ -416,33 +429,30 @@ namespace fingerprint
                 {
                     if (cn[x, y] == 0) //pojedyńczy punkt - minucja
                     {
+                        bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
+                        bb.SetPixel(x - 2, y - 1, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
 
-                        //bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));  //obrysowanie - kwadrat o sodku 3x3   ------ czy obrysowanie czy może zmiana koloru tych minucji z czarnego na inny?????
-                        /* bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
 
-                         bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
 
-                         bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
 
-                         bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
-
-                         bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                         bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));*/
+                        bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y - 1, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
 
                     }
                     if (cn[x, y] == 1) //zakończenie krawędzi - minucja
                     {
-
-
                         bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 0, 255));
                         bb.SetPixel(x - 2, y, Color.FromArgb(255, 0, 255));
@@ -478,26 +488,26 @@ namespace fingerprint
                             }
                         }*/
 
-                        //bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x - 2, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x - 2, y, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x - 2, y + 1, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x - 2, y + 2, Color.FromArgb(220, 90, 255));
+                        bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x - 2, y, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 255, 0));
 
-                        //bb.SetPixel(x - 1, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x - 1, y + 2, Color.FromArgb(220, 90, 255));
+                        bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 255, 0));
 
-                        //bb.SetPixel(x, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x, y + 2, Color.FromArgb(220, 90, 255));
+                        bb.SetPixel(x, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x, y + 2, Color.FromArgb(0, 255, 0));
 
-                        //bb.SetPixel(x + 1, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x + 1, y + 2, Color.FromArgb(220, 90, 255));
+                        bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 255, 0));
 
-                        //bb.SetPixel(x + 2, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x + 2, y - 2, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x + 2, y, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x + 2, y + 1, Color.FromArgb(220, 90, 255));
-                        //bb.SetPixel(x + 2, y + 2, Color.FromArgb(220, 90, 255));
+                        bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x + 2, y, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 255, 0));
+                        bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 255, 0));
                     }
                     if (cn[x, y] == 4) //skrzyżowanie - minucja
                     {
@@ -510,26 +520,26 @@ namespace fingerprint
                             }
                         }*/
 
-                        //b.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x - 2, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x - 2, y, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x - 2, y + 1, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x - 2, y + 2, Color.FromArgb(0, 0, 255));
+                        b.SetPixel(x - 2, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x - 2, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x - 2, y, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x - 2, y + 1, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x - 2, y + 2, Color.FromArgb(255, 255, 0));
 
-                        //bb.SetPixel(x - 1, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x - 1, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x - 1, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x - 1, y + 2, Color.FromArgb(255, 255, 0));
 
-                        //bb.SetPixel(x, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x, y + 2, Color.FromArgb(255, 255, 0));
 
-                        //bb.SetPixel(x + 1, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x + 1, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 1, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x + 1, y + 2, Color.FromArgb(255, 255, 0));
 
-                        //bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x + 2, y - 2, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x + 2, y, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x + 2, y + 1, Color.FromArgb(0, 0, 255));
-                        //bb.SetPixel(x + 2, y + 2, Color.FromArgb(0, 0, 255));
+                        bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x + 2, y - 2, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x + 2, y, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x + 2, y + 1, Color.FromArgb(255, 255, 0));
+                        bb.SetPixel(x + 2, y + 2, Color.FromArgb(255, 255, 0));
                     }
                 }
             }
@@ -571,9 +581,9 @@ namespace fingerprint
         {
             BitmapImage source = obrazek_2.Source as BitmapImage;
             Bitmap b = BitmapImageToBitmap(source);
-            /* BinaryzacjaAutomatyczna(b);
-             KMM(b);
-             SzukanieRozwidlen(b);*/
+            BinaryzacjaAutomatyczna(b);
+            KMM(b);
+            SzukanieMinucji(b);
             UsuwanieFalszywychMinucji(b);
         }
 
